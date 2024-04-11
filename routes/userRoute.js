@@ -17,7 +17,7 @@ import { isAuthenticated } from "../middlewares/auth.js";
 
 const router = express.Router();
 
-router.route("/test").get((req, res) => {
+router.route("/").get((req, res) => {
   res.status(200).json({
     success: true,
     message: "Shoehub API",
