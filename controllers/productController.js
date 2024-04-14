@@ -1,17 +1,21 @@
 import { catchAsyncErrors } from "../utils/catchAsyncErrors.js";
 import ProductModel from "../models/productModel.js";
 import UserModel from "../models/userModel.js";
-import ErrorHandler from "../utils/errorHandler.js";
 import cloudinary from "cloudinary";
+import ErrorHandler from "../utils/errorHandler.js";
+import productModel from "../models/productModel.js";
+import ApiFeatures from "../utils/apiFeatures.js";
 
+//---------------------------------------------------------------
+//admin
+
+//create product
 export const createProductController = catchAsyncErrors(
   async (req, res, next) => {
     let { mrp, price, images } = req.body;
 
     let discount = Math.floor(((mrp - price) / mrp) * 100);
 
-    if (images.length > 0) {
-    }
     let imagesLinks = [];
 
     for (let i = 0; i < images.length; i++) {
@@ -41,6 +45,42 @@ export const createProductController = catchAsyncErrors(
   }
 );
 
+//update product
+export const updateProductController = catchAsyncErrors(
+  async (req, res, next) => {
+    let product = await ProductModel.findById(req.params.id);
+
+    if (!product) {
+      return next(new ErrorHandler("Product not found", 404));
+    }
+
+    let { mrp, price } = req.body;
+
+    let discount = Math.floor(((mrp - price) / mrp) * 100);
+
+    product = await ProductModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+        user: req.user._id,
+        discount,
+      },
+
+      {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false,
+      }
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Product updated",
+      product,
+    });
+  }
+);
+
 // Delete Product
 export const deleteProductController = catchAsyncErrors(
   async (req, res, next) => {
@@ -65,6 +105,55 @@ export const deleteProductController = catchAsyncErrors(
 );
 
 //---------------------------------------------------------------
+//both
+export const getProductsController = catchAsyncErrors(
+  async (req, res, next) => {
+    const resultPerPage = 2;
+    const productsCount = await ProductModel.countDocuments();
+
+    let apiFeature = new ApiFeatures(ProductModel.find(), req.query)
+      .search()
+      .multiFilters()
+      .filter();
+
+    let products = await apiFeature.query;
+
+    let filteredProductsCount = products.length;
+
+    apiFeature = new ApiFeatures(ProductModel.find(), req.query)
+      .search()
+      .multiFilters()
+      .filter()
+      .pagination(resultPerPage);
+
+    products = await apiFeature.query;
+
+    res.status(200).json({
+      success: true,
+      productsCount,
+      resultPerPage,
+      filteredProductsCount,
+      queries: req.query,
+      products,
+    });
+  }
+);
+
+export const getProductController = catchAsyncErrors(async (req, res, next) => {
+  const product = await ProductModel.findById(req.params.id);
+
+  if (!product) {
+    return next(new ErrorHandler("Product not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    product,
+  });
+});
+
+//---------------------------------------------------------------
+//user
 
 //product rating counts
 function productRatingCounts(product) {
@@ -107,7 +196,7 @@ export const addReviewOnProductController = catchAsyncErrors(
 
     const review = {
       user: user._id,
-      name: user.name,
+      name: user.username,
       rating,
       comment,
     };

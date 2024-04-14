@@ -5,6 +5,9 @@ import {
   createProductController,
   deleteProductController,
   deleteReviewOnProductController,
+  getProductController,
+  getProductsController,
+  updateProductController,
 } from "../controllers/productController.js";
 
 const router = express.Router();
@@ -17,10 +20,13 @@ router
 //admin
 router
   .route("/admin/products/:id")
+  .put(isAuthenticated, authorizeRoles("admin"), updateProductController)
   .delete(isAuthenticated, authorizeRoles("admin"), deleteProductController);
 
 //both
+router.route("/products").get(getProductsController);
 
+router.route("/product/:id").get(getProductController);
 
 //user
 router

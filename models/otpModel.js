@@ -5,6 +5,7 @@ const otpModel = new mongoose.Schema({
     type: Number,
     requred: true,
   },
+
   createdAt: {
     type: Date,
     default: Date.now,
