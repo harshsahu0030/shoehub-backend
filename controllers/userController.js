@@ -26,6 +26,7 @@ export const registerUserController = catchAsyncErrors(
     await sendMail(req.body.email, subject, text);
 
     const otp = await OtpModel.create({
+      ...req.body,
       otp: otpNumber,
       expire: new Date(Date.now() + 30 * 60 * 1000),
     });
@@ -42,7 +43,7 @@ export const registerUserController = catchAsyncErrors(
 export const registerUserVerfiedController = catchAsyncErrors(
   async (req, res, next) => {
     const optId = await OtpModel.findById(req.params.id);
-    const { email, otp } = req.body;
+    const { otp } = req.body;
 
     if (parseInt(otp) !== parseInt(optId.otp)) {
       return next(new ErrorHandler("Invalid OTP", 400));
@@ -52,7 +53,7 @@ export const registerUserVerfiedController = catchAsyncErrors(
       return next(new ErrorHandler("Invalid OTP", 400));
     }
 
-    let user = await UserModel.findOne({ email });
+    let user = await UserModel.findOne({ email: optId.email });
 
     if (user) {
       return next(new ErrorHandler("user already exist.. please login", 400));
@@ -60,7 +61,11 @@ export const registerUserVerfiedController = catchAsyncErrors(
 
     req.body.otp = null;
 
-    user = await UserModel.create(req.body);
+    user = await UserModel.create({
+      name: optId.name,
+      email: optId.email,
+      password: optId.password,
+    });
 
     const subject = "Thank your for registering on Shoehub";
 
