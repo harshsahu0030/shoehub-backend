@@ -81,7 +81,7 @@ export const registerUserVerfiedController = catchAsyncErrors(
 
     // options for cookie
     const options = {
-      Expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+      Expires: DateTime.UtcNow.AddDays(7),
       HttpOnly: true,
       Secure: true,
       sameSite: "None",
@@ -126,7 +126,7 @@ export const loginUserController = catchAsyncErrors(async (req, res, next) => {
 
   // options for cookie
   const options = {
-    Expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+    Expires: DateTime.UtcNow.AddDays(7),
     HttpOnly: true,
     Secure: true,
     sameSite: "None",
@@ -158,12 +158,17 @@ export const loadUserController = catchAsyncErrors(async (req, res, next) => {
 export const logoutUserController = catchAsyncErrors(async (req, res, next) => {
   const user = await UserModel.findById(req.user._id);
 
+  const options = {
+    Expires: Date.now(),
+    HttpOnly: true,
+    Secure: true,
+    sameSite: "None",
+    Domain: ".netlify.app",
+  };
+
   res
     .status(200)
-    .cookie("token", null, {
-      expires: new Date(Date.now()),
-      httpOnly: true,
-    })
+    .cookie("token", null, options)
     .json({
       success: true,
       message: `See your soon! ${user.name}`,
