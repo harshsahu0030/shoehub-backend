@@ -29,7 +29,15 @@ cloudinary.config({
 //middlewares
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser({ extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+    methods: ["GET", "POST", "HEAD", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type"],
+    exposedHeaders: ["Content-Type"],
+  })
+);
 
 //import routes
 import userRoute from "./routes/userRoute.js";
