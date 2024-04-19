@@ -84,7 +84,7 @@ export const registerUserVerfiedController = catchAsyncErrors(
       maxAge: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
       httpOnly: true,
       domain: process.env.CLIENT_URL,
-      // secure: true,
+      secure: true,
       sameSite: "none",
     };
 
@@ -126,11 +126,8 @@ export const loginUserController = catchAsyncErrors(async (req, res, next) => {
 
   // options for cookie
   const options = {
-    maxAge: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
     httpOnly: true,
-    domain: process.env.CLIENT_URL,
-    // secure: true,
-    sameSite: "none",
   };
 
   return res
@@ -161,11 +158,8 @@ export const logoutUserController = catchAsyncErrors(async (req, res, next) => {
   res
     .status(200)
     .cookie("token", null, {
-      maxAge: new Date(Date.now()),
+      expires: new Date(Date.now()),
       httpOnly: true,
-      domain: process.env.CLIENT_URL,
-      secure: true,
-      sameSite: "none",
     })
     .json({
       success: true,
