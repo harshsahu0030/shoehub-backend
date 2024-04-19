@@ -84,7 +84,7 @@ export const registerUserVerfiedController = catchAsyncErrors(
       maxAge: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
       httpOnly: true,
       domain: process.env.CLIENT_URL,
-      secure: true,
+      // secure: true,
       sameSite: "none",
     };
 
@@ -129,7 +129,7 @@ export const loginUserController = catchAsyncErrors(async (req, res, next) => {
     maxAge: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
     httpOnly: true,
     domain: process.env.CLIENT_URL,
-    secure: true,
+    // secure: true,
     sameSite: "none",
   };
 
