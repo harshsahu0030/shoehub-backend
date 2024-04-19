@@ -37,17 +37,35 @@ class ApiFeatures {
   multiFilters() {
     const category = this.queryStr.category
       ? {
-          category: { $in: this.queryStr.category.split(",") },
+          category: {
+            $in: this.queryStr.category.split(","),
+            $regex: this.queryStr.category,
+            $options: "i",
+          },
+        }
+      : {};
+
+    const brand = this.queryStr.brand
+      ? {
+          brand: {
+            $in: this.queryStr.brand.split(","),
+            $regex: this.queryStr.brand,
+            $options: "i",
+          },
         }
       : {};
 
     const color = this.queryStr.color
       ? {
-          "color.name": { $in: this.queryStr.color.split(",") },
+          "color.name": {
+            $in: this.queryStr.color.split(","),
+            $regex: this.queryStr.color,
+            $options: "i",
+          },
         }
       : {};
 
-    this.query = this.query.find({ ...category, ...color });
+    this.query = this.query.find({ ...category, ...brand, ...color });
     return this;
   }
 
@@ -55,7 +73,16 @@ class ApiFeatures {
     const queryCopy = { ...this.queryStr };
 
     // Removing some fields for category
-    const removeFields = ["keyword", "page", "limit", "category", "color"];
+    const removeFields = [
+      "keyword",
+      "page",
+      "brand",
+      "limit",
+      "category",
+      "color",
+      "sort",
+      "limit",
+    ];
 
     // filter for category / type / gender
     removeFields.forEach((key) => delete queryCopy[key]);

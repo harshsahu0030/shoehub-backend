@@ -23,6 +23,7 @@ const productSchema = new mongoose.Schema(
     title: {
       type: String,
       required: [true, "Please enter title"],
+      unique: true,
     },
 
     gender: {
@@ -168,6 +169,7 @@ const productSchema = new mongoose.Schema(
         },
       },
     ],
+    
 
     user: {
       type: mongoose.Schema.ObjectId,

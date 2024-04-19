@@ -1,4 +1,5 @@
 import OtpModel from "../models/otpModel.js";
+import ProductModel from "../models/productModel.js";
 import UserModel from "../models/userModel.js";
 import { catchAsyncErrors } from "../utils/catchAsyncErrors.js";
 import ErrorHandler from "../utils/errorHandler.js";
@@ -185,6 +186,8 @@ export const updateUserPasswordController = catchAsyncErrors(
     res.status(200).json({ success: true, message: "password updated" });
   }
 );
+//----------------------------------------------------------------
+//wishlist
 
 //get user wishlist products
 export const getUserWishlistProductsController = catchAsyncErrors(
@@ -193,7 +196,7 @@ export const getUserWishlistProductsController = catchAsyncErrors(
 
     return res.status(200).json({
       success: true,
-      wishlist: user.wishlist,
+      products: user.wishlist,
     });
   }
 );
@@ -253,6 +256,9 @@ export const removeWishlistController = catchAsyncErrors(
   }
 );
 
+//----------------------------------------------------------------
+//cart
+
 //get user cart products
 export const getUserCartProductsController = catchAsyncErrors(
   async (req, res, next) => {
@@ -262,7 +268,7 @@ export const getUserCartProductsController = catchAsyncErrors(
 
     return res.status(200).json({
       success: true,
-      cart: user.cart,
+      products: user.cart,
     });
   }
 );
@@ -271,6 +277,8 @@ export const getUserCartProductsController = catchAsyncErrors(
 export const addCartController = catchAsyncErrors(async (req, res, next) => {
   const user = await UserModel.findById(req.user._id);
   const product = await ProductModel.findById(req.params.id);
+
+  const { size, quantity } = req.body;
 
   if (!product) {
     return next(new ErrorHandler("Product not found", 400));
@@ -282,10 +290,14 @@ export const addCartController = catchAsyncErrors(async (req, res, next) => {
 
   if (isPresent) {
     return next(new ErrorHandler("Product already in your Cart", 400));
+  } else if (!size || !quantity) {
+    return next(
+      new ErrorHandler("Please Select size before adding to Cart.", 400)
+    );
   } else {
     user.cart.push({
-      quantity: req.body.quantity,
-      size: req.body.size,
+      quantity: quantity,
+      size: size,
       product: product._id,
     });
     await user.save();

@@ -108,7 +108,7 @@ export const deleteProductController = catchAsyncErrors(
 //both
 export const getProductsController = catchAsyncErrors(
   async (req, res, next) => {
-    const resultPerPage = 2;
+    const resultPerPage = req.query.limit ? req.query.limit : 10;
     const productsCount = await ProductModel.countDocuments();
 
     let apiFeature = new ApiFeatures(ProductModel.find(), req.query)
@@ -126,7 +126,14 @@ export const getProductsController = catchAsyncErrors(
       .filter()
       .pagination(resultPerPage);
 
-    products = await apiFeature.query;
+    if (req.query.sort) {
+      let sort = req.query.sort.split(",")[0];
+      let sort01 = parseInt(req.query.sort.split(",")[1]);
+
+      products = await apiFeature.query.sort([[sort, sort01]]);
+    } else {
+      products = await apiFeature.query;
+    }
 
     res.status(200).json({
       success: true,
@@ -182,8 +189,10 @@ function averageRating(product) {
     avg += rev.rating;
   });
 
-  product.ratings =
+  let result =
     avg / (product.reviews.length === 0 ? 1 : product.reviews.length);
+
+  product.ratings = parseFloat(result.toFixed(1));
 }
 
 //add and update review on product
@@ -196,7 +205,7 @@ export const addReviewOnProductController = catchAsyncErrors(
 
     const review = {
       user: user._id,
-      name: user.username,
+      name: user.name,
       rating,
       comment,
     };

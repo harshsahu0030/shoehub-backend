@@ -23,11 +23,13 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_SECRET,
 });
 
-app.set("trust proxy", 1);
+//num of proxy
+// app.set("trust proxy", 1);
+
 //middlewares
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser({ extended: true }));
-app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
+app.use(cors());
 
 //import routes
 import userRoute from "./routes/userRoute.js";
