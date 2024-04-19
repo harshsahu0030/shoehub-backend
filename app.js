@@ -31,11 +31,9 @@ app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser({ extended: true }));
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: "http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST", "HEAD", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type"],
-    exposedHeaders: ["Content-Type"],
   })
 );
 
