@@ -130,7 +130,7 @@ export const loginUserController = catchAsyncErrors(async (req, res, next) => {
     httpOnly: true,
     secure: true,
     sameSite: "none",
-    domain: ".netlify.app",
+    domain: "http://localhost:5173",
   };
 
   return res
