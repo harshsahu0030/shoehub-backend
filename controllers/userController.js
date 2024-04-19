@@ -1,3 +1,4 @@
+import { config } from "dotenv";
 import OtpModel from "../models/otpModel.js";
 import ProductModel from "../models/productModel.js";
 import UserModel from "../models/userModel.js";
@@ -81,7 +82,7 @@ export const registerUserVerfiedController = catchAsyncErrors(
 
     // options for cookie
     const options = {
-      Expires: DateTime.UtcNow.AddDays(7),
+      Expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
       HttpOnly: true,
       Secure: true,
       sameSite: "None",
@@ -126,7 +127,7 @@ export const loginUserController = catchAsyncErrors(async (req, res, next) => {
 
   // options for cookie
   const options = {
-    Expires: DateTime.UtcNow.AddDays(7),
+    Expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
     HttpOnly: true,
     Secure: true,
     sameSite: "None",
@@ -158,8 +159,9 @@ export const loadUserController = catchAsyncErrors(async (req, res, next) => {
 export const logoutUserController = catchAsyncErrors(async (req, res, next) => {
   const user = await UserModel.findById(req.user._id);
 
+  // options for cookie
   const options = {
-    Expires: Date.now(),
+    Expires: new Date(Date.now()),
     HttpOnly: true,
     Secure: true,
     sameSite: "None",
@@ -168,7 +170,7 @@ export const logoutUserController = catchAsyncErrors(async (req, res, next) => {
 
   res
     .status(200)
-    .cookie("token", null, options)
+    .cookie("token", null, config)
     .json({
       success: true,
       message: `See your soon! ${user.name}`,
