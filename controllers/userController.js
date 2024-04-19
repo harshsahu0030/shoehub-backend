@@ -81,11 +81,11 @@ export const registerUserVerfiedController = catchAsyncErrors(
 
     // options for cookie
     const options = {
-      maxAge: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-      httpOnly: true,
-      domain: process.env.CLIENT_URL,
-      secure: true,
-      sameSite: "none",
+      Expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+      HttpOnly: true,
+      Secure: true,
+      sameSite: "None",
+      Domain: ".netlify.app",
     };
 
     return res
@@ -126,11 +126,11 @@ export const loginUserController = catchAsyncErrors(async (req, res, next) => {
 
   // options for cookie
   const options = {
-    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    domain: "localhost:5173",
+    Expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+    HttpOnly: true,
+    Secure: true,
+    sameSite: "None",
+    Domain: ".netlify.app",
   };
 
   return res
