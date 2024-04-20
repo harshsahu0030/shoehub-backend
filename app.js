@@ -8,6 +8,15 @@ import cors from "cors";
 
 const app = express();
 
+server.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With,Content-Type,Accept"
+  );
+  next();
+});
+
 //dotenv
 if (process.env.NODE_ENV !== "production") {
   dotenv.config({ path: "./config/config.env" });
